@@ -10,14 +10,16 @@ public class exapple extends Frame {
 	
 	static public String ex_default = "0+0i";
 	static public String ex_defaulta = "0+0i";
-	static public int iteration = 100;
+	static public int iteration = 30;
 	static public int clr = 0;
 	static public int zoomMax = 200;
-	static public double dX = -2.0;
-	static public double dXz = 2.0;
-	static public double dY = -2.0;
-	static public double dYz = 2.0;
-	static public double s = (Math.abs(dX)+dXz)/600;
+	static public int itcnt = 0;
+	static public double dX = -2;
+	static public double dXz = 1;
+	static public double dY = -1.5;
+	static public double dYz = 1.5;
+	static public double bigge = 600;
+	static public double s = (Math.abs(dX)+dXz)/bigge;
 	
 	public exapple() {
 		setBackground(Color.black);
@@ -35,18 +37,15 @@ public class exapple extends Frame {
 					clr = 0;
 					zeichne_x++;
 					farbe = compute(String.valueOf(p),String.valueOf(q));
-					switch (farbe) {
-						case 0: g.setColor(Color.black); break;
-						case 1: g.setColor(Color.blue); break;
-						case 2: g.setColor(Color.magenta); break;
-						case 3: g.setColor(Color.red); break;
-						case 4: g.setColor(Color.orange); break;
-						case 5: g.setColor(Color.yellow); break;
-						case 6: g.setColor(Color.white);
-						default: g.setColor(Color.black);
-					}
-	//				System.out.println(farbe);
 					
+					
+//					System.out.println(farbe);
+					
+//					farbe=(int) farbe/(iteration/125);
+					farbe=farbe*(255/iteration);
+					farbe=255-farbe;
+					
+					g.setColor(new Color(0,farbe,0));
 					g.fillRect(zeichne_x, zeichne_y, 1, 1);
 				}
 			}
@@ -55,13 +54,14 @@ public class exapple extends Frame {
 	
 	public static void main(String[] args) {
 		Frame f = new exapple();
-		f.setSize(600,600);
+		f.setSize((int) bigge,(int) bigge);
 		f.setVisible(true);
 		f.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
 		});
+		f.add(new exapple());
 	}
 	
 	static int compute(String X, String Y) {
@@ -72,47 +72,66 @@ public class exapple extends Frame {
 		
 		
 		double ctrl = 0;
-		for (int I=0; I<=iteration; I++) {
+//		for (int I=0; I<=iteration; I++) {
+		itcnt = 0;
+		while (uez(b) && itcnt <= iteration) {
+//			System.out.println(y);
 			y = ia(im(b,b),X+"+"+Y+"i");
 			b = y;
+			itcnt++;
 		}
 		p = b.split("\\+");
 		p2 = p[1].split("i");
 		ctrl = Math.abs(Double.parseDouble(p2[0]));
 		clr = (int) clr%7;
 		
-		return clr;
+		return itcnt-1;
 	}
 	
+//	static String ilog(String z1, String z2) {
+//		
+//		return end;
+//	}
+	
 	static String im(String z1, String z2) {
-		try {
-			String[] zahl11 = z1.split("\\+");
-			String[] zahl21 = z2.split("\\+");
-			String[] zahl12 = zahl11[1].split("i");
-			String[] zahl22 = zahl21[1].split("i");
+		String[] zahl11 = z1.split("\\+");
+		String[] zahl21 = z2.split("\\+");
+		String[] zahl12 = zahl11[1].split("i");
+		String[] zahl22 = zahl21[1].split("i");
+	
+		double z11 = Double.parseDouble(zahl11[0]);
+		double z21 = Double.parseDouble(zahl21[0]);
+		double z12 = Double.parseDouble(zahl12[0]);
+		double z22 = Double.parseDouble(zahl22[0]);
+	
+		double ee = z11*z21;
+		double ez = z11*z22;
+		double ze = z12*z21;
+		double zz = z12*z22*-1;
+	
+		double zahl1 = ee+zz;
+		double zahl2 = ez+ze;
+		double result = zahl1;
+		String end = String.valueOf(result)+"+"+zahl2+"i";
+		ex_default = end;
+		return end;
+	}
+	
+	static boolean uez(String z) {
+		boolean bool = false;
+		String[] az1 = z.split("\\+");
+		String[] az2 = az1[1].split("i");
+		double z1 = Double.parseDouble(az1[0]); //x
+		double z2 = Double.parseDouble(az2[0]); //y
 		
-			double z11 = Double.parseDouble(zahl11[0]);
-			double z21 = Double.parseDouble(zahl21[0]);
-			double z12 = Double.parseDouble(zahl12[0]);
-			double z22 = Double.parseDouble(zahl22[0]);
-		
-			double ee = z11*z21;
-			double ez = z11*z22;
-			double ze = z12*z21;
-			double zz = z12*z22*-1;
-		
-			double zahl1 = ee+zz;
-			double zahl2 = ez+ze;
-			double result = zahl1;
-			String end = String.valueOf(result)+"+"+zahl2+"i";
-			ex_default = end;
-			return end;
-		} catch (NumberFormatException e) {
-			clr++;
-			return "0+0i";
+		double ctrl = Math.sqrt(z1*z1+z2*z2);
+		if (Math.abs(ctrl) > 2) {
+			bool = false;
+		} else {
+			bool=true;
 		}
-			
 		
+		return bool;
 	}
 	
 	static String ia(String z1, String z2) {
