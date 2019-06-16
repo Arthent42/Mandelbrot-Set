@@ -61,7 +61,6 @@ public class exapple extends Frame {
 				System.exit(0);
 			}
 		});
-		f.add(new exapple());
 	}
 	
 	static int compute(String X, String Y) {
